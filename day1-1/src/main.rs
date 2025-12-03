@@ -1,9 +1,11 @@
 use std::{
     fs::File,
     io::{BufRead, BufReader},
+    time::Instant,
 };
 
 fn main() {
+    let now = Instant::now();
     let file = File::open("input-1-1.txt").unwrap();
     let reader = BufReader::new(file);
     let mut lock_state: u8 = 50;
@@ -16,4 +18,5 @@ fn main() {
         pwd += !((lock_state as i16).signum() as u16) & 0x0001;
     }
     println!("Password: {}", pwd);
+    println!("Time: {:?}", now.elapsed());
 }
