@@ -1,16 +1,19 @@
 use std::{
     fs::File,
     io::{BufRead, BufReader},
-    time::Instant,
+    time::{Duration, Instant},
     vec,
 };
 
 fn main() {
     let now = std::time::Instant::now();
+    let mut timing_per_iteration = Duration::from_millis(0);
     let file = File::open("inputs-3-2.txt").unwrap();
     let reader = BufReader::new(file);
     let mut result = 0u128;
+    let mut iteration_count = 0;
     for battery in reader.lines() {
+        let iter = Instant::now();
         let battery = battery.unwrap();
         let chars: Vec<(usize, char)> = battery.chars().enumerate().collect();
         let mut res = vec![];
@@ -33,7 +36,6 @@ fn main() {
         }
         let mut res = res.iter().collect::<Vec<_>>();
         res.sort_by(|a, b| a.0.cmp(&b.0));
-        println!("{:?}", res);
         let joltage = res
             .iter()
             .map(|x| x.1)
@@ -41,8 +43,14 @@ fn main() {
             .parse::<u128>()
             .unwrap();
         result += joltage;
+        timing_per_iteration += iter.elapsed();
+        iteration_count += 1;
     }
     println!("Password: {}", result);
     let end = Instant::now();
     println!("Time: {:?}", end.duration_since(now));
+    println!(
+        "Timing per iteration: {:?}",
+        timing_per_iteration / iteration_count
+    );
 }
