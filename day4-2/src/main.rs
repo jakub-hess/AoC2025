@@ -1,9 +1,12 @@
 use std::{
     fs::File,
     io::{BufRead, BufReader},
+    process::Command,
+    thread::sleep,
     time::Instant,
 };
 fn main() {
+    let visualize = false;
     println!("Day 4-2");
     println!("====================");
     println!("Naive solution:");
@@ -20,7 +23,7 @@ fn main() {
         .collect::<Vec<_>>();
     println!("File load time: {:?}", file_load.elapsed());
 
-    let (result, timing_per_iteration, iteration_count) = naive_solution(&mut lines);
+    let (result, timing_per_iteration, iteration_count) = naive_solution(&mut lines, visualize);
 
     println!("Password: {}", result);
     let end = Instant::now();
@@ -45,7 +48,7 @@ fn main() {
         .collect::<Vec<_>>();
     println!("File load time: {:?}", file_load.elapsed());
 
-    let (result, timing_per_iteration, iteration_count) = flood_solution(&mut lines);
+    let (result, timing_per_iteration, iteration_count) = flood_solution(&mut lines, visualize);
 
     println!("Password: {}", result);
     let end = Instant::now();
@@ -57,7 +60,10 @@ fn main() {
     );
 }
 
-pub fn flood_solution(input: &mut Vec<Vec<char>>) -> (u32, std::time::Duration, u32) {
+pub fn flood_solution(
+    input: &mut Vec<Vec<char>>,
+    visualize: bool,
+) -> (u32, std::time::Duration, u32) {
     let mut result = 0u32;
     let mut timing_per_iteration = std::time::Duration::from_millis(0);
     let mut iteration_count = 0;
@@ -83,8 +89,16 @@ pub fn flood_solution(input: &mut Vec<Vec<char>>) -> (u32, std::time::Duration, 
             if input[i][j] == '.' {
                 continue;
             }
-            if check_occupied_position(input, i, j, &look_positions, lines_count, line_length, &tx)
-            {
+            if check_occupied_position(
+                input,
+                i,
+                j,
+                &look_positions,
+                lines_count,
+                line_length,
+                &tx,
+                visualize,
+            ) {
                 result += 1;
             }
             while let Ok((ny, nx)) = rx.try_recv() {
@@ -100,6 +114,7 @@ pub fn flood_solution(input: &mut Vec<Vec<char>>) -> (u32, std::time::Duration, 
                     lines_count,
                     line_length,
                     &tx,
+                    visualize,
                 ) {
                     result += 1;
                 }
@@ -120,6 +135,7 @@ pub fn check_occupied_position(
     lines_count: usize,
     line_length: usize,
     tx: &std::sync::mpsc::Sender<(usize, usize)>,
+    visualize: bool,
 ) -> bool {
     let mut occupied_neighbors = vec![];
     for (dy, dx) in look_positions {
@@ -140,13 +156,28 @@ pub fn check_occupied_position(
         for (ny, nx) in occupied_neighbors {
             tx.send((ny, nx)).unwrap();
         }
+        if visualize {
+            let full_string = input
+                .iter()
+                .map(|line| line.iter().collect::<String>())
+                .collect::<Vec<String>>()
+                .join("\n");
+            sleep(std::time::Duration::from_millis(10));
+            Command::new("clear").status().unwrap();
+            Command::new("clear").status().unwrap();
+            Command::new("clear").status().unwrap();
+            println!("{}\n", full_string);
+        }
         true
     } else {
         false
     }
 }
 
-pub fn naive_solution(input: &mut Vec<Vec<char>>) -> (u32, std::time::Duration, u32) {
+pub fn naive_solution(
+    input: &mut Vec<Vec<char>>,
+    visualize: bool,
+) -> (u32, std::time::Duration, u32) {
     let mut result = 0u32;
     let mut timing_per_iteration = std::time::Duration::from_millis(0);
 
@@ -195,13 +226,25 @@ pub fn naive_solution(input: &mut Vec<Vec<char>>) -> (u32, std::time::Duration, 
                     input[i][j] = '.';
                     result += 1;
                     removed_count += 1;
+                    if visualize {
+                        let full_string = input
+                            .iter()
+                            .map(|line| line.iter().collect::<String>())
+                            .collect::<Vec<String>>()
+                            .join("\n");
+                        sleep(std::time::Duration::from_millis(10));
+                        Command::new("clear").status().unwrap();
+                        Command::new("clear").status().unwrap();
+                        Command::new("clear").status().unwrap();
+                        println!("{}\n", full_string);
+                    }
                 }
                 //println!("  Occupied count: {}", occupied_count);
             }
             timing_per_iteration += iter.elapsed();
             iteration_count += 1;
         }
-        println!("Removed this iteration: {}", removed_count);
+        //println!("Removed this iteration: {}", removed_count);
         if removed_count == 0 {
             break;
         }
