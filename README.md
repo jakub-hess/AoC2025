@@ -23,8 +23,8 @@
   </tr>
   <tr>
     <td>Day 4</td>
-    <td>❌</td>
-    <td>❌</td>
+    <td>✅</td>
+    <td>✅</td>
   </tr>
   <tr>
     <td>Day 5</td>
