@@ -120,6 +120,10 @@ impl Range {
                 .unwrap();
             self.repeat_count += 1;
 
+            if nex < self.start_num {
+                continue;
+            }
+
             if nex > self.end_num {
                 self.current_substr = (self.current_substr.parse::<u64>().unwrap() + 1).to_string();
                 self.substr_len = self.current_substr.chars().count();
