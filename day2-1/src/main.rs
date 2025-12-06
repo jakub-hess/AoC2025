@@ -5,7 +5,7 @@ use std::{
 
 fn main() {
     let now = std::time::Instant::now();
-    let file = File::open("input-2-1-test.txt").unwrap();
+    let file = File::open("input-2-1.txt").unwrap();
     let mut reader = BufReader::new(file);
     let mut string_buf = String::new();
     reader.read_to_string(&mut string_buf).unwrap();

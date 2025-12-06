@@ -33,6 +33,7 @@ fn main() {
     let mut marked_for_removal = HashSet::new();
     let mut iteration_count = 0;
     let mut final_ranges = vec![];
+    let mut visited_ranges = 0;
 
     let now_merge = Instant::now();
     for i in 0..ranges.len() {
@@ -41,12 +42,14 @@ fn main() {
         if marked_for_removal.contains(&i) {
             continue;
         }
+        visited_ranges += 1;
         let mut range = ranges[i].clone();
 
         for j in (i + 1)..ranges.len() {
             if marked_for_removal.contains(&j) {
                 continue;
             }
+
             if range.includes_range(&ranges[j]) {
                 marked_for_removal.insert(j);
             } else if range.overlaps(&ranges[j]) {
@@ -56,6 +59,7 @@ fn main() {
             } else {
                 break;
             }
+            visited_ranges += 1;
         }
         final_ranges.push(range);
         timing_per_iteration += timing_now.elapsed();
@@ -72,11 +76,12 @@ fn main() {
     println!("Result: {}", result);
     println!("Time: {:?}", end.duration_since(now));
     println!(
-        "Iteration count: {} Timing per iteration: {:?} \nMerge duration {:?} result calc time: {:?}",
+        "Iteration count: {} Timing per iteration: {:?} \nMerge duration {:?} result calc time: {:?} \nVisited ranges: {}",
         iteration_count,
         timing_per_iteration / iteration_count,
         merge_time,
-        calc_time
+        calc_time,
+        visited_ranges
     );
 }
 
