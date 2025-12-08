@@ -43,65 +43,38 @@ fn main() {
 
     let mut final_result = 0u128;
     let op_start = Instant::now();
-    let mut iteration_count = 0;
-    let mut new_positions = vec![];
+    let rows = lines.len();
+    let cols = lines[0].len();
     //let mut splitter_positions = vec![];
 
-    while let Some((row, col)) = position_stack.pop_front() {
-        //println!("Processing position: {:?}", (row, col));
-        // if row >= lines.len() || col >= lines[row].len() {
-        //     println!("Out of bounds position at ({}, {})", row, col);
-        //     continue;
-        // }
-        iteration_count += 1;
-
-        match lines[row][col] {
-            Position::Start => {
-                println!("At start position at ({}, {})", row, col);
-                if row + 1 < lines.len() {
-                    new_positions.push((row + 1, col)); // continue down
+    for row in 1..rows {
+        for col in 0..cols {
+            let current_pos = lines[row][col];
+            let above = lines[row - 1][col];
+            match (current_pos, above) {
+                (Position::Empty, Position::Beam(_)) => {
+                    let above = lines[row - 1][col];
+                    let new_pos = above.add(&current_pos);
+                    lines[row][col] = new_pos;
                 }
-            }
-            Position::Empty => {
-                println!("At empty position at ({}, {})", row, col);
-                lines[row][col] = lines[row][col].add(&lines[row - 1][col]);
-                if row + 1 < lines.len() {
-                    new_positions.push((row + 1, col)); // continue down
+                (Position::Empty, Position::Start) => {
+                    lines[row][col] = Position::Beam(1);
                 }
-            }
-            Position::Splitter(_) => {
-                println!("At splitter position at ({}, {})", row, col);
-                if row + 1 < lines.len() {
-                    position_stack.push_back((row, col - 1)); // split left
-                    lines[row][col - 1] = lines[row][col - 1].add(&lines[row - 1][col]);
-                    position_stack.push_back((row, col + 1)); // split right
-                    lines[row][col + 1] = lines[row][col + 1].add(&lines[row - 1][col]);
+                (Position::Splitter(_), Position::Beam(_)) => {
+                    let left = lines[row][col - 1];
+                    let right = lines[row][col + 1];
+                    lines[row][col - 1] = left.add(&above);
+                    lines[row][col + 1] = right.add(&above);
+                    final_result += 1;
                 }
-                final_result += 1;
-            }
-            Position::Beam(_) => {
-                println!("At beam position at ({}, {})", row, col);
-                if row + 1 < lines.len()
-                    && new_positions
-                        .iter()
-                        .find(|(new_row, new_col)| *new_row == row + 1 && *new_col == col)
-                        .is_none()
-                {
-                    new_positions.push((row + 1, col)); // continue down
+                (Position::Beam(_), Position::Beam(_)) => {
+                    let above = lines[row - 1][col];
+                    let new_pos = above.add(&current_pos);
+                    lines[row][col] = new_pos;
                 }
-            }
-            _ => {
-                //println!("At other position at ({}, {})", row, col);
+                _ => {}
             }
         }
-        //print_grid(&lines);
-
-        if position_stack.is_empty() {
-            position_stack.extend(new_positions.drain(..));
-        }
-        // if iteration_count == 200 {
-        //     break;
-        // }
     }
 
     let result_p2 = lines
@@ -123,15 +96,6 @@ fn main() {
     println!("Result P1: {}", final_result);
     println!("Result P2: {}", result_p2);
     println!("Time: {:?}", now.elapsed());
-}
-
-fn print_grid(grid: &Vec<Vec<Position>>) {
-    for row in grid {
-        for pos in row {
-            print!("{:?} ", pos);
-        }
-        println!();
-    }
 }
 
 #[derive(Clone, Copy)]

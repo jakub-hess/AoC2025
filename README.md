@@ -55,8 +55,10 @@ All of these were run on a 16 Core M4 Max
   </tr>
   <tr>
     <td>Day 7</td>
-    <td>❌</td>
-    <td>❌</td>
+    <td>✅</td>
+    <td>499.875µs</td>
+    <td>✅</td>
+    <td>499.875µs</td>
   </tr>
   <tr>
     <td>Day 8</td>
