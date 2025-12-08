@@ -8,7 +8,7 @@ use std::{
 };
 
 fn main() {
-    println!("Day 6-2");
+    println!("Day 7");
     println!("====================");
     let now = Instant::now();
     let file_read = Instant::now();
