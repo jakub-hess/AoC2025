@@ -89,6 +89,7 @@ fn main() {
                 .collect::<Vec<usize>>();
             println!("Longest circuits sizes: {:?}", longest_curcuit);
             result = longest_curcuit.iter().product::<usize>();
+            println!("P1 Operation time: {:?}", op_start.elapsed());
         }
         circuits.sort_by_key(|circuit| Reverse(circuit.size()));
         if box_pair_heap.is_empty() || circuits.first().unwrap().size() == boxes.len() {
@@ -98,7 +99,8 @@ fn main() {
     }
 
     let op_duration = op_start.elapsed();
-    println!("Operation time: {:?}", op_duration);
+    println!("P2 Operation time: {:?}", op_duration);
+    println!("P2 needed {} iterations", iteration_count);
     println!("Result P1: {:?}", result);
     println!("Result P2: {:?}", result_p2);
 
