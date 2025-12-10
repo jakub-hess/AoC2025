@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.optimize import milp, LinearConstraint, Bounds
 import re
+import time
 
 def parse_line(line):
     """Parse a machine line into buttons and required joltages"""
@@ -65,6 +66,7 @@ def solve_machine(buttons, required_joltages):
     return None, None
 
 def main():
+    start_time = time.time()
     total_sum = 0
     unsolved = 0
     
@@ -84,8 +86,10 @@ def main():
                 print(f"Machine {idx}: No solution found!")
                 unsolved += 1
     
+    elapsed = time.time() - start_time
     print(f"\nUnsolved: {unsolved}")
     print(f"Result P1: {total_sum}")
+    print(f"Time: {elapsed*1000:.3f}ms")
 
 if __name__ == "__main__":
     main()
