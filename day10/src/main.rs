@@ -16,8 +16,6 @@ fn main() {
     let file_read = Instant::now();
     let file = File::open("inputs-10.txt").unwrap();
     let reader = BufReader::new(file);
-
-    let result_p1 = 0;
     let mut machines = VecDeque::new();
     for line in reader.lines() {
         let line = line.unwrap();
@@ -270,7 +268,7 @@ fn get_echeleon_form(matrix: &mut Vec<Vec<f32>>) {
     for column in 0..matrix[0].len() - 1 {
         let pivot_row = find_pivot_column(matrix, row, column);
         // print!("Pivot row for column {}: {:?}\n", column, pivot_row);
-        let pivot_row = if let Some(pivot_row) = pivot_row {
+        let _ = if let Some(pivot_row) = pivot_row {
             matrix.swap(row, pivot_row);
 
             pivot_row

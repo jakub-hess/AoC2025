@@ -1,9 +1,7 @@
 use std::{
     collections::{HashMap, VecDeque},
-    fmt::Debug,
     fs::File,
     io::{BufRead, BufReader},
-    result,
     time::Instant,
     vec,
 };
@@ -16,7 +14,6 @@ fn main() {
     let file = File::open("inputs-11.txt").unwrap();
     let reader = BufReader::new(file);
 
-    let result_p1 = 0;
     let mut machines = HashMap::new();
     for line in reader.lines() {
         let line = line.unwrap();
@@ -75,7 +72,6 @@ fn main() {
 
     if machines.contains_key("svr") {
         let p2_start = Instant::now();
-        let mut result_p2 = 0;
         let mut to_visit: VecDeque<Vec<String>> = VecDeque::new();
         to_visit.push_back(vec!["fft".to_string()]);
         let svr_fft_paths = dfs(
